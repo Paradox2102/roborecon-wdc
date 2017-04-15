@@ -10,6 +10,7 @@ var RoboreconDb = (function () {
             storageBucket: "paradox-scout-dc256.appspot.com",
             messagingSenderId: "777517430963"
         },
+
         // firebase references
         dbRef = firebase.initializeApp(dbConfig).database().ref(),
 
@@ -17,6 +18,10 @@ var RoboreconDb = (function () {
         getEventScoutingReports = function (teamNum, apiKey, eventKey) {
             //return dbRef.child(`team_scouting_reports/${teamNum}/${apiKey}/${eventKey}`).once('value');
             return dbRef.child('team_scouting_reports/' + teamNum + '/' + apiKey + '/' + eventKey).once('value');
+        },
+
+        getOverallRobotStats = function (eventKey){
+            return dbRef.child('event_scores/' + eventKey).once('value');
         },
 
         // ----------------------------------------------------------------------
@@ -35,6 +40,8 @@ var RoboreconDb = (function () {
 
     // public api
     return {
-        getEventScoutingReports: getEventScoutingReports
+        //what does this do
+        getEventScoutingReports: getEventScoutingReports,
+        getOverallRobotStats: getOverallRobotStats
     };
 })();
