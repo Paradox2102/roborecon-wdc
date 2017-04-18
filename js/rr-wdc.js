@@ -170,11 +170,12 @@
         var teamObj = JSON.parse(tableau.connectionData);
         var teamNum = teamObj.team_number;
         var apiKey = teamObj.api_key;
+        var selectedEventId = teamObj.event_id;
 
         var tableData = [];
 
         if (table.tableInfo.id == "scoutingReports") {
-            RoboreconDb.getEventScoutingReports(teamNum, apiKey, "2017cada").then(function (snapshot) {
+            RoboreconDb.getEventScoutingReports(teamNum, apiKey, selectedEventId).then(function (snapshot) {
                 var data = snapshot.val();
                 $.each(data, function (k, v) {
                     //console.log(k);
@@ -206,7 +207,7 @@
         }
 
        if (table.tableInfo.id == "overallStats") {
-            RoboreconDb.getOverallRobotStats("2017cada").then(function (snapshot) {
+            RoboreconDb.getOverallRobotStats(selectedEventId).then(function (snapshot) {
                 var data = snapshot.val();
                 var eventId = snapshot.key;
                 $.each(data, function(k, v) {
@@ -233,7 +234,7 @@
         };
 
         if (table.tableInfo.id == "eventMatchStats") {
-            RoboreconDb.getOverallRobotStats("2017cada").then(function (snapshot) {
+            RoboreconDb.getOverallRobotStats(selectedEventId).then(function (snapshot) {
                 var data = snapshot.val();
                 var eventId = snapshot.key;
                 var matches = [];
@@ -304,28 +305,35 @@
     $(document).ready(function () {
         var tn = Cookies.get('teamNum');
         var ak = Cookies.get('apiKey');
+        var selectedEventId = Cookies.get('eventId');
 
         if(tn !== undefined){
-            $('#teamNum').val(tn);
+            $('#txtTeamNum').val(tn);
         }
 
         if(ak !== undefined){
-            $('#apiKey').val(ak)
+            $('#txtApiKey').val(ak)
         }
 
-        $("#submitButton").click(function () {
+        if(selectedEventId !== undefined){
+            $('#ddEvents').val(selectedEventId)
+        }
+
+        $("#btnSubmit").click(function () {
             //The date input fields are stored here
             var teamObj = {
                 //trim removes spaces
-                team_number: $('#teamNum').val().trim(),
-                api_key: $('#apiKey').val().trim(),
+                team_number: $('#txtTeamNum').val().trim(),
+                api_key: $('#txtApiKey').val().trim(),
+                event_id: $('#ddEvents').val().trim(),
             };
 
             Cookies.set('teamNum', teamObj.team_number);
             Cookies.set('apiKey', teamObj.api_key);
+            Cookies.set('eventId', teamObj.event_id);
 
             tableau.connectionData = JSON.stringify(teamObj);
-            tableau.connectionName = "Roborecon Scouting WDC";
+            tableau.connectionName = "RoboRecon Scouting WDC";
             tableau.submit();
         });
     });

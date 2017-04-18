@@ -22,23 +22,86 @@
 <body>
     <div class="container container-table">
         <div class="row vertical-center-row">
-            <div class="text-center col-md-4 col-md-offset-4">
-                <h2>Get Scouting Data</h2>
-                <form>
-                    <div class="form-inline">
-                        <label for="teamNum" class="text-center">Team Number</label>
-                        <span>&mdash;</span>
-                        <label for="apiKey">API Key</label>
+            <h2>Get Scouting Data</h2>
+            <form class="form-horizontal">
+                <div class="form-group">
+                    <label for="txtTeamNum" class="col-sm-2 control-label">Team Number</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="txtTeamNum" value="" placeholder="2102">
                     </div>
-                    <div class="form-inline">
-                        <input type="text" class="form-control" id="teamNum" value="" placeholder="2102">
-                        <input type="password" class="form-control" id="apiKey" value="" placeholder="your api key">
+                </div>
+
+                <div class="form-group">
+                    <label for="txtApiKey" class="col-sm-2 control-label">API Key</label>
+                    <div class="col-sm-10">
+                        <input type="password" class="form-control" id="txtApiKey" value="" placeholder="Your Team's API Key">
                     </div>
-                </form>
-                <button type="button" id="submitButton" class="btn btn-success" style="margin: 10px;">Get Scouting Data!</button>
-            </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="btnGetEvents" class="col-sm-2 control-label"></label>
+                    <div class="col-sm-10">
+                        <button type="button" id="btnGetEvents" class="btn btn-success" style="margin: 10px;">Get Events</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="ddEvents" class="col-sm-2 control-label">Events</label>
+                    <div class="col-sm-10">
+                        <select id="ddEvents" class="form-control">
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="btnSubmit" class="col-sm-2 control-label"></label>
+                    <div class="col-sm-10">
+                        <button type="button" id="btnSubmit" class="btn btn-success" style="margin: 10px;">Get Scouting Data For Selected Event</button>
+                    </div>
+                </div>
+
+            </form>  
         </div>
     </div>
-</body>
 
+<script>
+    $(document).ready(function () {
+        $('#btnSubmit').prop("disabled",true);
+
+        // load dropdown if already fetched events
+        var eventOptions = Cookies.getJSON('eventOptions');
+        if (eventOptions !== undefined) {
+            var options = [];
+
+            $.each(eventOptions, function(idx) {
+               options.push(eventOptions[idx]);
+            });
+
+            $('#ddEvents').empty().html(options.join(''));
+            $('#btnSubmit').prop("disabled",false);
+        }
+
+        // hook up events button to grab whatever events in db
+        $("#btnGetEvents").click(function () {
+            var options = [];
+
+            // fetch events in scouting db
+            RoboreconDb.getEvents().then(function (snapshot) {
+                // note: have to use snapshot.forEach to get child nodes in specified sort order!
+                snapshot.forEach(function(child) {
+                    var frcEvent = child.val();
+                    options.push('<option value="'+ child.key +'">'+ frcEvent.name + ' (' + frcEvent.start_date +')</option>');
+                });
+
+                // so don't have to re-fetch every time
+                Cookies.set('eventOptions', JSON.stringify(options));
+
+                // refresh dropdown
+                $('#ddEvents').empty().html(options.join(''));
+                $('#btnSubmit').prop("disabled",false);
+            });
+        });
+    });
+</script>
+</body>
 </html>

@@ -25,7 +25,7 @@ var RoboreconDb = (function () {
         },
 
         getEvents = function() {
-            return dbRef.child('events').once('value');
+            return dbRef.child('events').orderByChild('start_date').once('value');
         },
 
         // ----------------------------------------------------------------------
@@ -45,6 +45,7 @@ var RoboreconDb = (function () {
     // public api
     return {
         //what does this do
+        getEvents: getEvents,
         getEventScoutingReports: getEventScoutingReports,
         getOverallRobotStats: getOverallRobotStats
     };
