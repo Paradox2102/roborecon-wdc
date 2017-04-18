@@ -24,6 +24,10 @@ var RoboreconDb = (function () {
             return dbRef.child('event_scores/' + eventKey).once('value');
         },
 
+        getEvents = function() {
+            return dbRef.child('events').once('value');
+        },
+
         // ----------------------------------------------------------------------
         // UTILITY METHODS
         // ----------------------------------------------------------------------
